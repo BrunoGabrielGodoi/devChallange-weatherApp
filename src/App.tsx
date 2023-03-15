@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import shower from "./assets/Shower.png";
@@ -24,10 +24,29 @@ import { StatsCard } from "./components/statsCard";
 import { PercentageBar } from "./components/percentageBar";
 import { WindDirection } from "./components/windDirection";
 import { format } from "date-fns";
+import { CelsiusTo } from "./util/converter";
+import useGeolocation from "react-hook-geolocation";
+import { getLogger } from "react-query/types/core/logger";
+import { GetCoordenates } from "./util/cityAPI";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
-  const data = GetWeather(1, 1);
+  let geolocation: { latitude: number; longitude: number } = useGeolocation();
+
+  const [defaultLocation, setdefaultLocation] = useState(geolocation);
+
+  console.log(GetCoordenates({ cityName: "Bragança pa" }));
+
+  let data = GetWeather({
+    latitude: defaultLocation?.latitude ?? 0,
+    longitude: defaultLocation?.longitude ?? 0,
+  });
+
+  useEffect(() => {
+    setdefaultLocation(geolocation);
+  }, [geolocation]);
+
+  const [degresOption, setDegresOption] = useState<"C" | "F">("C");
   const weatherConditions = new Map<number, { image: string; name: string }>([
     [0, { image: clear, name: "Clear" }],
     [1, { image: clear, name: "Clear" }],
@@ -60,70 +79,92 @@ function App() {
   ]);
 
   const a = [1, 2, 3, 4, 5, 6];
-  console.log(data);
 
   return (
-    <div className="bg-[#1E213A] flex flex-row mx-auto max-w-[120rem] max-h-screen font-[raleway]  text-[#E7E7EB] text-xs ">
-      <div id="SideBar" className="bg-[#1E213A] w-1/3 h-screen overflow-hidden">
-        <div className="mt-11 ml-12 mr-12 flex flex-row justify-between">
-          <Button
-            type="submit"
-            className="bg-[#6E707A]   justify-center h-10 w-40"
-          >
-            <p className="m-auto ml-0 text-[16px] text-[white]">
-              Search for places
-            </p>
-          </Button>
-          <Button
-            type="submit"
-            className="bg-[#6E707A]  justify-center rounded-full h-10 w-10"
-          >
-            <BiCurrentLocation className="m-auto h-5 w-5 text-[white]" />
-          </Button>
-        </div>
-        <div id="weatherNowImage" className="mt-28 overflow-hidden relative">
-          <img
-            src={clouds}
-            className=" w-[100%] relative opacity-20 z-10"
-          ></img>
-          <img
-            src={
-              weatherConditions.get(data?.daily?.weathercode[0] ?? 0)?.image ??
-              ""
-            }
-            className="top-1/2 left-1/2 -mt-[101px] -ml-[101px] w-[202px] absolute z-20"
-          ></img>
-        </div>
-        <div className="mt-28 font-medium flex ">
-          <span className="text-[144px] mx-auto text-[#E7E7EB]">
-            {Math.round(data?.hourly?.temperature_2m[new Date().getHours()])}
-            <span className="text-[48px] text-[#A09FB1]">ºc</span>
-          </span>
-        </div>
-        <div className="mt-28 text-center">
-          <span className="text-[36px] text-[#A09FB1] font-semibold">
-            {weatherConditions.get(data?.daily?.weathercode[0] ?? 0)?.name ??
-              ""}
-          </span>
-        </div>
-        <div className="mt-32 text-center">
-          <span className="text-[18px] text-[#88869D] font-semibold">
-            Today{" "}
-            <span className="ml-4">
-              •<span className="ml-4">{format(new Date(), "EEE, dd MMM")}</span>
+    <div className="flex flex-row mx-auto max-w-[100%] max-h-[100%] xl:h-screen font-[raleway]  text-[#E7E7EB] text-xs  ">
+      <div
+        id="SideBarFake"
+        className="bg-[#1E213A] w-1/3 h-[100%] overflow-hidden  "
+      ></div>
+      {/* <div
+        id="SideBar"
+        className="bg-[#1E213A] w-1/3 h-[100%] overflow-hidden fixed  "
+      >
+        <div className="max-w-md mx-auto">
+          <div className="mt-11 ml-12 mr-12 flex flex-row justify-between">
+            <Button
+              type="submit"
+              className="bg-[#6E707A]   justify-center h-10 w-40"
+            >
+              <p className="m-auto ml-0 text-[16px] text-[white]">
+                Search for places
+              </p>
+            </Button>
+            <Button
+              type="submit"
+              className="bg-[#6E707A]  justify-center rounded-full h-10 w-10"
+              onClick={() => {
+                console.log("button pressed");
+                setdefaultLocation(() => geolocation);
+              }}
+            >
+              <BiCurrentLocation className="m-auto h-5 w-5 text-[white]" />
+            </Button>
+          </div>
+          <div id="weatherNowImage" className="mt-28 overflow-hidden relative">
+            <img
+              src={clouds}
+              className=" w-[100%] relative opacity-20 z-10"
+            ></img>
+            <img
+              src={
+                weatherConditions.get(data?.daily?.weathercode[0] ?? 0)
+                  ?.image ?? ""
+              }
+              className="top-1/2 left-1/2 -mt-[101px] -ml-[101px] w-[202px] absolute z-20"
+            ></img>
+          </div>
+          <div className="mt-28 font-medium flex ">
+            <span className="text-[144px] mx-auto text-[#E7E7EB]">
+              {Math.round(
+                CelsiusTo({
+                  value: data?.hourly?.temperature_2m[new Date().getHours()],
+                  unit: degresOption,
+                })
+              )}
+              <span className="text-[48px] text-[#A09FB1]">
+                º{degresOption}
+              </span>
             </span>
-          </span>
-        </div>
-        <div className="mt-8 flex text-center">
-          <div className="flex mx-auto text-[18px] text-[#88869D] font-semibold">
-            <IoMdPin className="-mt-[2px]" />
-            <span>Helsinki</span>
+          </div>
+          <div className="mt-28 text-center">
+            <span className="text-[36px] text-[#A09FB1] font-semibold">
+              {weatherConditions.get(data?.daily?.weathercode[0] ?? 0)?.name ??
+                ""}
+            </span>
+          </div>
+          <div className="mt-32 text-center">
+            <span className="text-[18px] text-[#88869D] font-semibold">
+              Today{" "}
+              <span className="ml-4">
+                •
+                <span className="ml-4">
+                  {format(new Date(), "EEE, dd MMM")}
+                </span>
+              </span>
+            </span>
+          </div>
+          <div className="mt-8 flex text-center">
+            <div className="flex mx-auto text-[18px] text-[#88869D] font-semibold">
+              <IoMdPin className="-mt-[2px]" />
+              <span>Helsinki</span>
+            </div>
           </div>
         </div>
-      </div>
-      {/* <div
+      </div> */}
+      <div
         id="Search-SideBar"
-        className="bg-[#1E213A] w-1/3 h-screen overflow-hidden "
+        className="bg-[#1E213A] w-1/3 h-screen overflow-hidden fixed"
       >
         <div className="mx-12">
           <SearchBar />
@@ -142,18 +183,28 @@ function App() {
             </div>
           </div>
         </div>
-      </div> */}
-      <div className="bg-[#100E1D] w-[71%] h-screen pr-32 flex flex-col">
+      </div>
+      <div className="bg-[#100E1D] w-[71%]  h-[100%] pr-32 flex flex-col">
         <div className="flex flex-row justify-end space-x-4 mt-11 ">
           <Button
             type="submit"
-            className="bg-[#6E707A] justify-center rounded-full h-10 w-10"
+            className={`${
+              degresOption == "C"
+                ? "bg-[#e0e0e6] text-[#000]"
+                : "bg-[#6E707A] text-[#fff] "
+            }  justify-center rounded-full h-10 w-10`}
+            onClick={() => setDegresOption("C")}
           >
-            ºc
+            ºC
           </Button>
           <Button
             type="submit"
-            className="bg-[#6E707A]  justify-center rounded-full h-10 w-10"
+            className={`${
+              degresOption == "F"
+                ? "bg-[#e0e0e6] text-[#000]"
+                : "bg-[#6E707A] text-[#fff] "
+            }  justify-center rounded-full h-10 w-10`}
+            onClick={() => setDegresOption("F")}
           >
             ºF
           </Button>
@@ -166,14 +217,20 @@ function App() {
             if (index < 6 && index != 0)
               return (
                 <DailyCard
-                  date={data?.daily.time[a]}
+                  date={data?.daily?.time[a]}
                   image={
                     weatherConditions.get(data?.daily?.weathercode[a] ?? 0)
                       ?.image ?? ""
                   }
-                  maxTemperature={data?.daily?.apparent_temperature_max[a] ?? 0}
-                  minTemperature={data?.daily?.apparent_temperature_min[a] ?? 0}
-                  type="C"
+                  maxTemperature={CelsiusTo({
+                    value: data?.daily?.apparent_temperature_max[a] ?? 0,
+                    unit: degresOption,
+                  })}
+                  minTemperature={CelsiusTo({
+                    value: data?.daily?.apparent_temperature_min[a] ?? 0,
+                    unit: degresOption,
+                  })}
+                  type={degresOption}
                 ></DailyCard>
               );
           })}
