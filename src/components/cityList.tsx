@@ -16,12 +16,12 @@ export function CityList({
   longitude: number;
   onClickCB: (latitude: number, longitude: number) => void;
 }) {
-  let mouseIn = false;
   return (
     <Button
       key={key}
+      size="lg"
       variant="text"
-      className={`hover:boder hover:border-[#616475] transition-all h-16 flex flex-row items-center p-3 justify-between  `}
+      className={`hover:boder hover:border-[#616475] hover:shadow-pink-500/40 transition-all h-16 flex flex-row items-center p-3 justify-between  `}
       onClick={() => onClickCB(latitude, longitude)}
     >
       <span className="font-medium ">

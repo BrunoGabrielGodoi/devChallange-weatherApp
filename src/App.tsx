@@ -29,6 +29,7 @@ import useGeolocation from "react-hook-geolocation";
 import { getLogger } from "react-query/types/core/logger";
 import { GetCoordenates } from "./util/cityAPI";
 import { CityList } from "./components/cityList";
+import _ from "lodash";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
@@ -179,7 +180,10 @@ function App() {
         className="bg-[#1E213A] w-1/3 h-screen overflow-hidden fixed"
       >
         <div className="mx-12">
-          <SearchBar onValueChangeCB={onSearchBarValueChange} />
+          <SearchBar
+            onValueChangeCB={_.debounce(onSearchBarValueChange, 1000)}
+            onSubmitCB={onSearchBarValueChange}
+          />
           <div className="mt-14 text-base flex flex-col space-y-6">
             {possibleCities?.map((x: any, index: number) => (
               <CityList

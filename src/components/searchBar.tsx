@@ -7,8 +7,10 @@ import { GetCoordenates } from "../util/cityAPI";
 
 export function SearchBar({
   onValueChangeCB,
+  onSubmitCB,
 }: {
   onValueChangeCB: (query: string) => void;
+  onSubmitCB: (query: string) => void;
 }) {
   let [inputValue, setInputValue] = useState("");
   const textInput = useRef(null);
@@ -20,7 +22,7 @@ export function SearchBar({
         type="text"
         value={inputValue}
         onKeyDown={(event) => {
-          'if (event.key == "Enter") AddItem();';
+          if (event.key == "Enter") onSubmitCB(inputValue);
         }}
         className={`bg-[#1E213A] p-3 border-[1px] flex-auto h-[100%] mx-auto w-3/5  font-['montserrat'] font-[14px]`}
         placeholder="Search Location?"
@@ -33,7 +35,7 @@ export function SearchBar({
         type="submit"
         children={"Search"}
         className={`bg-[#3C47E9]  flex-auto h-[100%] w-1/5 ml-3 text-[white]  font-['montserrat']`}
-        onClick={() => "AddItem()"}
+        onClick={() => onSubmitCB(inputValue)}
       />
     </div>
   );
