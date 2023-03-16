@@ -21,7 +21,8 @@ export function GetCoordenates({ cityName }: { cityName: string }) {
       );
 
       return obj.data;
-    }
+    },
+    { cacheTime: 100000 }
   );
   useQuery(["get-coordinates", cityName]);
 

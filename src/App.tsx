@@ -28,14 +28,18 @@ import { CelsiusTo } from "./util/converter";
 import useGeolocation from "react-hook-geolocation";
 import { getLogger } from "react-query/types/core/logger";
 import { GetCoordenates } from "./util/cityAPI";
+import { CityList } from "./components/cityList";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
   let geolocation: { latitude: number; longitude: number } = useGeolocation();
 
   const [defaultLocation, setdefaultLocation] = useState(geolocation);
+  const [citySearch, setcitySearch] = useState("");
 
-  console.log(GetCoordenates({ cityName: "Bragança pa" }));
+  const possibleCities = GetCoordenates({ cityName: citySearch });
+
+  // console.log(GetCoordenates({ cityName: "Bragança pa" }));
 
   let data = GetWeather({
     latitude: defaultLocation?.latitude ?? 0,
@@ -79,6 +83,14 @@ function App() {
   ]);
 
   const a = [1, 2, 3, 4, 5, 6];
+
+  function onSearchBarValueChange(query: string) {
+    setcitySearch(query);
+  }
+
+  function onSelectCity(latitude: number, longitude: number) {
+    setdefaultLocation({ latitude, longitude });
+  }
 
   return (
     <div className="flex flex-row mx-auto max-w-[100%] max-h-[100%] xl:h-screen font-[raleway]  text-[#E7E7EB] text-xs  ">
@@ -167,8 +179,18 @@ function App() {
         className="bg-[#1E213A] w-1/3 h-screen overflow-hidden fixed"
       >
         <div className="mx-12">
-          <SearchBar />
+          <SearchBar onValueChangeCB={onSearchBarValueChange} />
           <div className="mt-14 text-base flex flex-col space-y-6">
+            {possibleCities?.map((x: any, index: number) => (
+              <CityList
+                cityName={x.city}
+                cityState={x.countryCode}
+                key={index}
+                latitude={x.latitude}
+                longitude={x.longitude}
+                onClickCB={onSelectCity}
+              ></CityList>
+            ))}
             <div className="border border-[#616475] h-16 flex flex-row items-center p-3 justify-between">
               <span className="font-medium ">London</span>
               <span className="font-medium text-[#616475]">{">"}</span>

@@ -3,18 +3,16 @@ import axios from "axios";
 // import React from "react";
 import { useState, useRef, Component } from "react";
 import { useQuery } from "react-query";
+import { GetCoordenates } from "../util/cityAPI";
 
-export function SearchBar() {
+export function SearchBar({
+  onValueChangeCB,
+}: {
+  onValueChangeCB: (query: string) => void;
+}) {
   let [inputValue, setInputValue] = useState("");
   const textInput = useRef(null);
-  let latitude = -23.58,
-    longitude = -46.36;
-  navigator.geolocation.getCurrentPosition(function (position) {
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-  });
 
-  ////
   return (
     <div className={`flex flex-row h-14 mt-20 `}>
       <input
@@ -28,6 +26,7 @@ export function SearchBar() {
         placeholder="Search Location?"
         onChange={(event) => {
           setInputValue(event.target.value);
+          onValueChangeCB(event.target.value);
         }}
       />
       <Button
