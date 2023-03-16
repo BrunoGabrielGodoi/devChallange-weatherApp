@@ -16,7 +16,7 @@ export function SearchBar({
   const textInput = useRef(null);
 
   return (
-    <div className={`flex flex-row h-14 mt-20 `}>
+    <div className={`flex flex-row h-14  `}>
       <input
         autoFocus
         type="text"

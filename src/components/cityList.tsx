@@ -7,6 +7,7 @@ export function CityList({
   cityState,
   latitude,
   longitude,
+  city,
   onClickCB,
 }: {
   cityName: string;
@@ -14,7 +15,8 @@ export function CityList({
   key: number;
   latitude: number;
   longitude: number;
-  onClickCB: (latitude: number, longitude: number) => void;
+  city: string;
+  onClickCB: (latitude: number, longitude: number, city: string) => void;
 }) {
   return (
     <Button
@@ -22,7 +24,7 @@ export function CityList({
       size="lg"
       variant="text"
       className={`hover:boder hover:border-[#616475] hover:shadow-pink-500/40 transition-all h-16 flex flex-row items-center p-3 justify-between  `}
-      onClick={() => onClickCB(latitude, longitude)}
+      onClick={() => onClickCB(latitude, longitude, city)}
     >
       <span className="font-medium ">
         {cityName} - {cityState}

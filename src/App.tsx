@@ -16,6 +16,7 @@ import { Button } from "@material-tailwind/react";
 import { BiCurrentLocation } from "react-icons/bi";
 import { IoMdPin } from "react-icons/io";
 import { RiArrowDownCircleFill } from "react-icons/ri";
+import { CgClose } from "react-icons/cg";
 import { SearchBar } from "./components/searchBar";
 import { useState, useRef, Component } from "react";
 import { GetWeather } from "./util/weatherAPI";
@@ -36,10 +37,12 @@ function App() {
   let geolocation: { latitude: number; longitude: number } = useGeolocation();
 
   const [defaultLocation, setdefaultLocation] = useState(geolocation);
+  const [cityName, setCityName] = useState("");
   const [citySearch, setcitySearch] = useState("");
+  const [searchBarEnabled, setSearchBarEnabled] = useState(false);
 
   const possibleCities = GetCoordenates({ cityName: citySearch });
-
+  console.log(possibleCities);
   // console.log(GetCoordenates({ cityName: "Bragança pa" }));
 
   let data = GetWeather({
@@ -89,8 +92,9 @@ function App() {
     setcitySearch(query);
   }
 
-  function onSelectCity(latitude: number, longitude: number) {
+  function onSelectCity(latitude: number, longitude: number, cityName: string) {
     setdefaultLocation({ latitude, longitude });
+    setCityName(cityName);
   }
 
   return (
@@ -99,15 +103,18 @@ function App() {
         id="SideBarFake"
         className="bg-[#1E213A] w-1/3 h-[100%] overflow-hidden  "
       ></div>
-      {/* <div
+      <div
         id="SideBar"
-        className="bg-[#1E213A] w-1/3 h-[100%] overflow-hidden fixed  "
+        className={`bg-[#1E213A] w-1/3 h-[100%] overflow-hidden fixed ${
+          searchBarEnabled ? "hidden" : ""
+        }`}
       >
         <div className="max-w-md mx-auto">
           <div className="mt-11 ml-12 mr-12 flex flex-row justify-between">
             <Button
               type="submit"
               className="bg-[#6E707A]   justify-center h-10 w-40"
+              onClick={() => setSearchBarEnabled(true)}
             >
               <p className="m-auto ml-0 text-[16px] text-[white]">
                 Search for places
@@ -170,16 +177,25 @@ function App() {
           <div className="mt-8 flex text-center">
             <div className="flex mx-auto text-[18px] text-[#88869D] font-semibold">
               <IoMdPin className="-mt-[2px]" />
-              <span>Helsinki</span>
+              <span>{cityName}</span>
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
+
       <div
         id="Search-SideBar"
-        className="bg-[#1E213A] w-1/3 h-screen overflow-hidden fixed"
+        className={`bg-[#1E213A] w-1/3 h-screen overflow-hidden fixed ${
+          searchBarEnabled ? "" : "hidden"
+        }`}
       >
         <div className="mx-12">
+          <div
+            className="ml-14 flex  flex-row-reverse mt-5 mb-11 "
+            onClick={() => setSearchBarEnabled(false)}
+          >
+            <CgClose className="h-6 w-6 cursor-pointer"></CgClose>
+          </div>
           <SearchBar
             onValueChangeCB={_.debounce(onSearchBarValueChange, 1000)}
             onSubmitCB={onSearchBarValueChange}
@@ -192,10 +208,18 @@ function App() {
                 key={index}
                 latitude={x.latitude}
                 longitude={x.longitude}
-                onClickCB={onSelectCity}
+                onClickCB={(
+                  latitude: number,
+                  longitude: number,
+                  city: string
+                ) => {
+                  onSelectCity(latitude, longitude, city);
+                  setSearchBarEnabled(false);
+                }}
+                city={x.city}
               ></CityList>
             ))}
-            <div className="border border-[#616475] h-16 flex flex-row items-center p-3 justify-between">
+            {/* <div className="border border-[#616475] h-16 flex flex-row items-center p-3 justify-between">
               <span className="font-medium ">London</span>
               <span className="font-medium text-[#616475]">{">"}</span>
             </div>
@@ -206,7 +230,7 @@ function App() {
             <div className=" h-16 flex flex-row items-center p-3 justify-between">
               <span className="font-medium ">Chuvitiba</span>
               <span className="font-medium text-[#616475]">{">"}</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
