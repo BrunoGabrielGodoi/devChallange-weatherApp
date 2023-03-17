@@ -28,31 +28,37 @@ import { format } from "date-fns";
 import { CelsiusTo } from "./util/converter";
 import useGeolocation from "react-hook-geolocation";
 import { getLogger } from "react-query/types/core/logger";
-import { GetCoordenates } from "./util/cityAPI";
+import { GetCity, GetCoordenates } from "./util/cityAPI";
 import { CityList } from "./components/cityList";
 import _ from "lodash";
+import { LoadingBar } from "./components/loadingBar";
 
 function App() {
-  const [inputValue, setInputValue] = useState("");
-  let geolocation: { latitude: number; longitude: number } = useGeolocation();
-
+  const geolocation: { latitude: number; longitude: number } = useGeolocation();
+  const geoCityName = GetCity(geolocation)?.city ?? "";
   const [defaultLocation, setdefaultLocation] = useState(geolocation);
-  const [cityName, setCityName] = useState("");
+  useEffect(() => {
+    setdefaultLocation(geolocation);
+  }, [geolocation]);
+
   const [citySearch, setcitySearch] = useState("");
   const [searchBarEnabled, setSearchBarEnabled] = useState(false);
 
-  const possibleCities = GetCoordenates({ cityName: citySearch });
-  console.log(possibleCities);
-  // console.log(GetCoordenates({ cityName: "Bragança pa" }));
+  let { data: possibleCities, isLoading: loadingCities } = GetCoordenates({
+    cityName: citySearch,
+  });
 
-  let data = GetWeather({
+  console.log(possibleCities);
+  const weatherData = GetWeather({
     latitude: defaultLocation?.latitude ?? 0,
     longitude: defaultLocation?.longitude ?? 0,
   });
 
+  const [cityName, setCityName] = useState("");
+
   useEffect(() => {
-    setdefaultLocation(geolocation);
-  }, [geolocation]);
+    setCityName(geoCityName);
+  }, [geoCityName]);
 
   const [degresOption, setDegresOption] = useState<"C" | "F">("C");
   const weatherConditions = new Map<number, { image: string; name: string }>([
@@ -138,7 +144,7 @@ function App() {
             ></img>
             <img
               src={
-                weatherConditions.get(data?.daily?.weathercode[0] ?? 0)
+                weatherConditions.get(weatherData?.daily?.weathercode[0] ?? 0)
                   ?.image ?? ""
               }
               className="top-1/2 left-1/2 -mt-[101px] -ml-[101px] w-[202px] absolute z-20"
@@ -148,7 +154,8 @@ function App() {
             <span className="text-[144px] mx-auto text-[#E7E7EB]">
               {Math.round(
                 CelsiusTo({
-                  value: data?.hourly?.temperature_2m[new Date().getHours()],
+                  value:
+                    weatherData?.hourly?.temperature_2m[new Date().getHours()],
                   unit: degresOption,
                 })
               )}
@@ -159,8 +166,8 @@ function App() {
           </div>
           <div className="mt-28 text-center">
             <span className="text-[36px] text-[#A09FB1] font-semibold">
-              {weatherConditions.get(data?.daily?.weathercode[0] ?? 0)?.name ??
-                ""}
+              {weatherConditions.get(weatherData?.daily?.weathercode[0] ?? 0)
+                ?.name ?? ""}
             </span>
           </div>
           <div className="mt-32 text-center">
@@ -201,7 +208,8 @@ function App() {
             onSubmitCB={onSearchBarValueChange}
           />
           <div className="mt-14 text-base flex flex-col space-y-6">
-            {possibleCities?.map((x: any, index: number) => (
+            <LoadingBar active={loadingCities} />
+            {(possibleCities as any)?.data?.map((x: any, index: number) => (
               <CityList
                 cityName={x.city}
                 cityState={x.countryCode}
@@ -267,17 +275,18 @@ function App() {
             if (index < 6 && index != 0)
               return (
                 <DailyCard
-                  date={data?.daily?.time[a]}
+                  date={weatherData?.daily?.time[a]}
                   image={
-                    weatherConditions.get(data?.daily?.weathercode[a] ?? 0)
-                      ?.image ?? ""
+                    weatherConditions.get(
+                      weatherData?.daily?.weathercode[a] ?? 0
+                    )?.image ?? ""
                   }
                   maxTemperature={CelsiusTo({
-                    value: data?.daily?.apparent_temperature_max[a] ?? 0,
+                    value: weatherData?.daily?.apparent_temperature_max[a] ?? 0,
                     unit: degresOption,
                   })}
                   minTemperature={CelsiusTo({
-                    value: data?.daily?.apparent_temperature_min[a] ?? 0,
+                    value: weatherData?.daily?.apparent_temperature_min[a] ?? 0,
                     unit: degresOption,
                   })}
                   type={degresOption}
@@ -295,36 +304,46 @@ function App() {
           >
             <StatsCard
               title="Wind status"
-              value={data?.hourly?.windspeed_10m[new Date().getHours()]}
-              valueType={data?.hourly_units?.windspeed_10m}
+              value={weatherData?.hourly?.windspeed_10m[new Date().getHours()]}
+              valueType={weatherData?.hourly_units?.windspeed_10m}
               size="large"
             >
               <WindDirection
-                value={data?.hourly?.winddirection_10m[new Date().getHours()]}
+                value={
+                  weatherData?.hourly?.winddirection_10m[new Date().getHours()]
+                }
               ></WindDirection>
             </StatsCard>
 
             <StatsCard
               title="Humidity"
-              value={data?.hourly?.relativehumidity_2m[new Date().getHours()]}
-              valueType={data?.hourly_units?.relativehumidity_2m}
+              value={
+                weatherData?.hourly?.relativehumidity_2m[new Date().getHours()]
+              }
+              valueType={weatherData?.hourly_units?.relativehumidity_2m}
               size="large"
             >
               <PercentageBar
-                value={data?.hourly?.relativehumidity_2m[new Date().getHours()]}
+                value={
+                  weatherData?.hourly?.relativehumidity_2m[
+                    new Date().getHours()
+                  ]
+                }
               ></PercentageBar>
             </StatsCard>
 
             <StatsCard
               title="Visibility"
-              value={data?.hourly?.visibility[new Date().getHours()]}
-              valueType={data?.hourly_units?.visibility}
+              value={weatherData?.hourly?.visibility[new Date().getHours()]}
+              valueType={weatherData?.hourly_units?.visibility}
             ></StatsCard>
 
             <StatsCard
               title="Air Pressure"
-              value={data?.hourly?.surface_pressure[new Date().getHours()]}
-              valueType={data?.hourly_units?.surface_pressure}
+              value={
+                weatherData?.hourly?.surface_pressure[new Date().getHours()]
+              }
+              valueType={weatherData?.hourly_units?.surface_pressure}
             ></StatsCard>
           </div>
         </div>
