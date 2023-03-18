@@ -48,8 +48,7 @@ function App() {
     cityName: citySearch,
   });
 
-  console.log(possibleCities);
-  const weatherData = GetWeather({
+  const { data: weatherData, isLoading: loadingWeather } = GetWeather({
     latitude: defaultLocation?.latitude ?? 0,
     longitude: defaultLocation?.longitude ?? 0,
   });
@@ -290,6 +289,7 @@ function App() {
                     unit: degresOption,
                   })}
                   type={degresOption}
+                  isLoading={loadingWeather}
                 ></DailyCard>
               );
           })}

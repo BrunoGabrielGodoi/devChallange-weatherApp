@@ -24,6 +24,5 @@ export function GetWeather({
       return obj.data;
     }
   );
-  useQuery(["get-weather", latitude, longitude]);
-  return data;
+  return useQuery<unknown, unknown, any>(["get-weather", latitude, longitude]);
 }
