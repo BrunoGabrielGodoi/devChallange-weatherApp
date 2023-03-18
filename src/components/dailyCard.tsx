@@ -45,7 +45,10 @@ export function DailyCard({
       <div className="mx-auto mt-4">
         <span>{dateString}</span>
       </div>
-      <img src={image} className="mt-3 w-14 mx-auto h-14"></img>
+      <div className="mt-3 w-16 mx-auto aspect-square h-16">
+        <img src={image} className="w-[100%] h-[100%]"></img>
+      </div>
+
       <div className="felx flex-col mx-auto mt-8 mb-4">
         <span>
           {Math.round(maxTemperature)}°{type}

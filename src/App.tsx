@@ -48,7 +48,7 @@ function App() {
     cityName: citySearch,
   });
 
-  const { data: weatherData, isLoading: loadingWeather } = GetWeather({
+  let { data: weatherData, isLoading: loadingWeather } = GetWeather({
     latitude: defaultLocation?.latitude ?? 0,
     longitude: defaultLocation?.longitude ?? 0,
   });
@@ -103,14 +103,18 @@ function App() {
   }
 
   return (
-    <div className="flex flex-row mx-auto max-w-[100%] max-h-[100%] xl:h-screen font-[raleway]  text-[#E7E7EB] text-xs  ">
+    <div
+      className="xl:h-screen 
+                    md:flex-row 
+                    flex flex-col  mx-auto max-w-[100%] max-h-[100%]  font-[raleway]  text-[#E7E7EB] text-xs bg-[#100E1D] "
+    >
       <div
         id="SideBarFake"
         className="bg-[#1E213A] w-1/3 h-[100%] overflow-hidden  "
       ></div>
       <div
         id="SideBar"
-        className={`bg-[#1E213A] w-1/3 h-[100%] overflow-hidden fixed ${
+        className={`md:w-1/3 md:fixed bg-[#1E213A] w-[100%] h-screen overflow-hidden   ${
           searchBarEnabled ? "hidden" : ""
         }`}
       >
@@ -118,7 +122,7 @@ function App() {
           <div className="mt-11 ml-12 mr-12 flex flex-row justify-between">
             <Button
               type="submit"
-              className="bg-[#6E707A]   justify-center h-10 w-40"
+              className="bg-[#6E707A] justify-center h-10 w-40"
               onClick={() => setSearchBarEnabled(true)}
             >
               <p className="m-auto ml-0 text-[16px] text-[white]">
@@ -131,45 +135,57 @@ function App() {
               onClick={() => {
                 console.log("button pressed");
                 setdefaultLocation(() => geolocation);
+                setCityName(geoCityName);
               }}
             >
               <BiCurrentLocation className="m-auto h-5 w-5 text-[white]" />
             </Button>
           </div>
-          <div id="weatherNowImage" className="mt-28 overflow-hidden relative">
-            <img
-              src={clouds}
-              className=" w-[100%] relative opacity-20 z-10"
-            ></img>
-            <img
-              src={
-                weatherConditions.get(weatherData?.daily?.weathercode[0] ?? 0)
-                  ?.image ?? ""
-              }
-              className="top-1/2 left-1/2 -mt-[101px] -ml-[101px] w-[202px] absolute z-20"
-            ></img>
+          <div id="weatherNowImage" className="mt-20 overflow-hidden relative">
+            <img src={clouds} className=" w-[100%] relative opacity-20 z-10" />
+            {loadingWeather ? (
+              <div className="top-1/2 left-1/2 -mt-[101px] -ml-[101px] w-[202px] h-48 absolute z-20 rounded-full animate-pulse bg-[#4a4e6d]" />
+            ) : (
+              <img
+                src={
+                  weatherConditions.get(weatherData?.daily?.weathercode[0] ?? 0)
+                    ?.image ?? ""
+                }
+                className={`top-1/2 left-1/2 -mt-[101px] -ml-[101px] w-[202px] absolute z-20`}
+              ></img>
+            )}
           </div>
           <div className="mt-28 font-medium flex ">
-            <span className="text-[144px] mx-auto text-[#E7E7EB]">
-              {Math.round(
-                CelsiusTo({
-                  value:
-                    weatherData?.hourly?.temperature_2m[new Date().getHours()],
-                  unit: degresOption,
-                })
-              )}
+            <span
+              className={`text-[144px] mx-auto text-[#E7E7EB]  ${
+                loadingWeather ? "bg-[#4a4e6d] animate-pulse h-40 w-40" : ""
+              }`}
+            >
+              {!loadingWeather
+                ? Math.round(
+                    CelsiusTo({
+                      value:
+                        weatherData?.hourly?.temperature_2m[
+                          new Date().getHours()
+                        ],
+                      unit: degresOption,
+                    })
+                  )
+                : ""}
               <span className="text-[48px] text-[#A09FB1]">
-                º{degresOption}
+                {!loadingWeather ? `º${degresOption}` : ""}
               </span>
             </span>
           </div>
           <div className="mt-28 text-center">
             <span className="text-[36px] text-[#A09FB1] font-semibold">
-              {weatherConditions.get(weatherData?.daily?.weathercode[0] ?? 0)
-                ?.name ?? ""}
+              {!loadingWeather
+                ? weatherConditions.get(weatherData?.daily?.weathercode[0] ?? 0)
+                    ?.name ?? ""
+                : ""}
             </span>
           </div>
-          <div className="mt-32 text-center">
+          <div className="md:mt-20 mt-10 text-center">
             <span className="text-[18px] text-[#88869D] font-semibold">
               Today{" "}
               <span className="ml-4">
@@ -188,7 +204,6 @@ function App() {
           </div>
         </div>
       </div>
-
       <div
         id="Search-SideBar"
         className={`bg-[#1E213A] w-1/3 h-screen overflow-hidden fixed ${
@@ -241,7 +256,7 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="bg-[#100E1D] w-[71%]  h-[100%] pr-32 flex flex-col">
+      <div className="md:w-[71%] bg-[#100E1D] w-full h-max h- pr-32 flex flex-col">
         <div className="flex flex-row justify-end space-x-4 mt-11 ">
           <Button
             type="submit"
@@ -268,7 +283,10 @@ function App() {
         </div>
         <div
           id="cardsList"
-          className="mt-16 ml-40  xl:space-x-6 xl:flex xl:flex-row lg:grid-cols-3 grid-cols-2 grid gap-3"
+          className="2xl:space-x-14 2xl:flex 2xl:flex-row 
+                      xl:grid-cols-4  
+                      lg:grid-cols-3 
+                      grid-cols-2 grid gap-3 mt-16 ml-40 "
         >
           {a.map((a, index) => {
             if (index < 6 && index != 0)
@@ -307,6 +325,7 @@ function App() {
               value={weatherData?.hourly?.windspeed_10m[new Date().getHours()]}
               valueType={weatherData?.hourly_units?.windspeed_10m}
               size="large"
+              isLoading={loadingWeather}
             >
               <WindDirection
                 value={
@@ -322,6 +341,7 @@ function App() {
               }
               valueType={weatherData?.hourly_units?.relativehumidity_2m}
               size="large"
+              isLoading={loadingWeather}
             >
               <PercentageBar
                 value={
@@ -336,6 +356,7 @@ function App() {
               title="Visibility"
               value={weatherData?.hourly?.visibility[new Date().getHours()]}
               valueType={weatherData?.hourly_units?.visibility}
+              isLoading={loadingWeather}
             ></StatsCard>
 
             <StatsCard
@@ -344,6 +365,7 @@ function App() {
                 weatherData?.hourly?.surface_pressure[new Date().getHours()]
               }
               valueType={weatherData?.hourly_units?.surface_pressure}
+              isLoading={loadingWeather}
             ></StatsCard>
           </div>
         </div>
