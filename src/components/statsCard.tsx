@@ -18,7 +18,7 @@ export function StatsCard({
   return (
     <div
       id="small-card-visibility"
-      className={`bg-[#1E213A] min-w-[20rem] max-w-sm ${
+      className={`bg-[#1E213A] md:min-w-[20rem] max-w-sm ${
         size == "medium" ? "h-40" : "h-52"
       } flex flex-col justify-center font-medium text-base  text-[#E7E7EB]`}
     >

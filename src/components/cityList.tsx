@@ -23,7 +23,8 @@ export function CityList({
       key={key}
       size="lg"
       variant="text"
-      className={`hover:boder hover:border-[#616475] hover:shadow-pink-500/40 transition-all h-16 flex flex-row items-center p-3 justify-between  `}
+      className={` border-transparent  hover:border hover:border-[#616475] 
+      transition-all h-16 flex flex-row items-center p-3 justify-between  `}
       onClick={() => onClickCB(latitude, longitude, city)}
     >
       <span className="font-medium ">

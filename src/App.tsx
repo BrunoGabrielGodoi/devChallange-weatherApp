@@ -115,7 +115,7 @@ function App() {
       <div
         id="SideBar"
         className={`md:w-1/3 md:fixed bg-[#1E213A] w-[100%] h-screen overflow-hidden   ${
-          searchBarEnabled ? "hidden" : ""
+          searchBarEnabled ? "" : ""
         }`}
       >
         <div className="max-w-md mx-auto">
@@ -206,9 +206,11 @@ function App() {
       </div>
       <div
         id="Search-SideBar"
-        className={`bg-[#1E213A] w-1/3 h-screen overflow-hidden fixed ${
-          searchBarEnabled ? "" : "hidden"
-        }`}
+        className={`md:w-1/3 md:fixed bg-[#1E213A] w-[100%] h-screen overflow-hidden ${
+          searchBarEnabled
+            ? "md:left-0 ls:top-0"
+            : "md:-left-[110rem] ls:-top-[110rem]"
+        } transition-all duration-500 `}
       >
         <div className="mx-12">
           <div
@@ -256,8 +258,8 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="md:w-[71%] bg-[#100E1D] w-full h-max h- pr-32 flex flex-col">
-        <div className="flex flex-row justify-end space-x-4 mt-11 ">
+      <div className="md:w-[71%] bg-[#100E1D] w-full h-max  md:pr-32 flex flex-col">
+        <div className="flex flex-row md:justify-end justify-center space-x-4 mt-11 ">
           <Button
             type="submit"
             className={`${
@@ -286,7 +288,8 @@ function App() {
           className="2xl:space-x-14 2xl:flex 2xl:flex-row 
                       xl:grid-cols-4  
                       lg:grid-cols-3 
-                      grid-cols-2 grid gap-3 mt-16 ml-40 "
+                      sm:ml-40
+                      grid-cols-2 grid gap-3 mt-16 mx-auto"
         >
           {a.map((a, index) => {
             if (index < 6 && index != 0)
@@ -312,7 +315,7 @@ function App() {
               );
           })}
         </div>
-        <div id="highlights" className="mt-20 ml-40 ">
+        <div id="highlights" className="mt-[72px] md:ml-40 mx-auto ">
           <div>
             <span className="font-bold text-2xl">Today’s Hightlights</span>
           </div>
