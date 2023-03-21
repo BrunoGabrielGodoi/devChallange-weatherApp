@@ -37,7 +37,8 @@
 
 ## Overview
 
-![image](https://user-images.githubusercontent.com/20050537/208322564-ac964c80-e24d-492b-8f26-855d51c479af.png)
+![image](https://user-images.githubusercontent.com/20050537/226495444-a287a109-237d-4989-96a3-1da8a9924730.png)
+
 
 - What was your experience?
   My second little front end project! I'm getting the hang of things, suddenly everything is actually staying where i wanted!
