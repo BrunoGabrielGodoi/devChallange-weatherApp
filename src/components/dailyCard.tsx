@@ -26,7 +26,7 @@ export function DailyCard({
   return isLoading ? (
     <div
       id="small-card"
-      className="bg-[#1E213A] animate-pulse w-32 h-44 flex flex-col justify-center font-medium text-base "
+      className="bg-[#1E213A] animate-pulse w-32 h-44 flex flex-col justify-center font-medium text-base transition-all duration-500"
     >
       <div className="mx-auto mt-4 bg-[#4a4e6d] w-20 h-6">
         <span>{}</span>
@@ -40,7 +40,7 @@ export function DailyCard({
   ) : (
     <div
       id="small-card"
-      className="bg-[#1E213A] w-32 h-44 flex flex-col justify-center font-medium text-base "
+      className="bg-[#1E213A] w-32 h-44 flex flex-col justify-center font-medium text-base transition-all duration-500"
     >
       <div className="mx-auto mt-4">
         <span>{dateString}</span>

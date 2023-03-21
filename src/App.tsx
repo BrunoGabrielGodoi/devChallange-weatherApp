@@ -114,8 +114,8 @@ function App() {
       ></div>
       <div
         id="SideBar"
-        className={`md:w-1/3 md:fixed bg-[#1E213A] w-[100%] h-screen overflow-hidden   ${
-          searchBarEnabled ? "" : ""
+        className={`md:w-1/3 md:fixed bg-[#1E213A] w-[100%] h-screen overflow-hidden z-0 transition-all duration-1000 ${
+          searchBarEnabled ? " " : ""
         }`}
       >
         <div className="max-w-md mx-auto">
@@ -141,7 +141,7 @@ function App() {
               <BiCurrentLocation className="m-auto h-5 w-5 text-[white]" />
             </Button>
           </div>
-          <div id="weatherNowImage" className="mt-20 overflow-hidden relative">
+          <div id="weatherNowImage" className="mt-20 overflow-hidden relative ">
             <img src={clouds} className=" w-[100%] relative opacity-20 z-10" />
             {loadingWeather ? (
               <div className="top-1/2 left-1/2 -mt-[101px] -ml-[101px] w-[202px] h-48 absolute z-20 rounded-full animate-pulse bg-[#4a4e6d]" />
@@ -206,15 +206,17 @@ function App() {
       </div>
       <div
         id="Search-SideBar"
-        className={`md:w-1/3 md:fixed bg-[#1E213A] w-[100%] h-screen overflow-hidden ${
+        className={`md:w-1/3 md:fixed absolute bg-[#1E213A] w-[100%] h-screen overflow-hidden ${
           searchBarEnabled
-            ? "md:left-0 ls:top-0"
-            : "md:-left-[110rem] ls:-top-[110rem]"
+            ? "md:left-0 max-md:top-0 "
+            : "md:-left-[110rem] max-md:-top-[110rem] "
         } transition-all duration-500 `}
       >
         <div className="mx-12">
           <div
-            className="ml-14 flex  flex-row-reverse mt-5 mb-11 "
+            className={`ml-14 flex  flex-row-reverse mt-5 mb-11 z-0${
+              searchBarEnabled ? "disabled" : ""
+            }`}
             onClick={() => setSearchBarEnabled(false)}
           >
             <CgClose className="h-6 w-6 cursor-pointer"></CgClose>
@@ -288,8 +290,8 @@ function App() {
           className="2xl:space-x-14 2xl:flex 2xl:flex-row 
                       xl:grid-cols-4  
                       lg:grid-cols-3 
-                      sm:ml-40
-                      grid-cols-2 grid gap-3 mt-16 mx-auto"
+                      md:ml-40 
+                      grid-cols-2 grid gap-3 mt-16 mx-auto "
         >
           {a.map((a, index) => {
             if (index < 6 && index != 0)
@@ -315,13 +317,13 @@ function App() {
               );
           })}
         </div>
-        <div id="highlights" className="mt-[72px] md:ml-40 mx-auto ">
+        <div id="highlights" className="mt-[72px] md:ml-40 max-md:mx-auto">
           <div>
             <span className="font-bold text-2xl">Today’s Hightlights</span>
           </div>
           <div
             id="cardsGrid"
-            className="mt-8  grid-flow-row	grid-cols-1 xl:grid-cols-2  gap-12 grid"
+            className="xl:grid-cols-2 mt-8 grid-flow-row grid-cols-1 gap-12 grid mx-auto"
           >
             <StatsCard
               title="Wind status"
@@ -371,6 +373,20 @@ function App() {
               isLoading={loadingWeather}
             ></StatsCard>
           </div>
+        </div>
+        <div className="flex flex-row md:ml-40 ">
+          <span
+            onClick={() =>
+              window.open(
+                "https://github.com/BrunoGabrielGodoi/devChallange-toDoList",
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
+            className="text-[#A09FB1] cursor-pointer mx-auto mt-8 mb-4 text-sm font-['montserrat'] "
+          >
+            created by <u>Bruno</u> - devChallenges.io
+          </span>
         </div>
       </div>
     </div>
